@@ -3,5 +3,7 @@ require('dotenv').config();
 
 // exportar la propiedad Config con los valores del objeto
 module.exports.Config = {
-  port: process.env.PORT
+  port: process.env.PORT,
+  mongoUri: process.env.MONGO_URI,
+  mongoDbname: process.env.MONGO_DBNAME, 
 };
