@@ -3,7 +3,7 @@ const debug = require("debug")("app:module-database");
 
 const { Config } = require('../config/index');
 
-// definir connection
+// iniciar variable de connection
 var connection = null;
 
 // Database como clave
