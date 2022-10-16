@@ -14,6 +14,7 @@ module.exports.SalesAPI = (app) => {
     .post("/", SalesController.createSale)
     // update
     .put("/:id", SalesController.updateSale)
+    .delete("/:id", SalesController.deleteSale)
   // hacer disponibles todas las rutas
   app.use("/api/sales", router);
 };

@@ -83,7 +83,6 @@ module.exports.SalesController = {
   // update
   updateSale: async (req, res) => {
     try {
-
       const {
         params: { id },
       } = req;
@@ -99,17 +98,16 @@ module.exports.SalesController = {
       } else if (!body || Object.keys(body) === 0) {
         Response.error(res, new createError.BadRequest());
       } else {
-      
         var newAmount;
-      
+
         if (body.amount <= sale.amount) {
-          newAmount = (sale.amount - body.amount) + product.cantidad; 
-          console.log(`new amount <= ${newAmount}`)
+          newAmount = sale.amount - body.amount + product.cantidad;
+          console.log(`new amount <= ${newAmount}`);
         }
         if (body.amount > sale.amount) {
-          newAmount = body.amount - sale.amount; 
+          newAmount = body.amount - sale.amount;
           newAmount = product.cantidad - newAmount;
-          console.log(`new amount > ${newAmount}`)
+          console.log(`new amount > ${newAmount}`);
         }
 
         let idProduct = product._id.toString();
@@ -119,31 +117,50 @@ module.exports.SalesController = {
           cantidad: newAmount,
         };
 
-        delete sale['total']
-        let total = product.precio * body.amount
+        delete sale["total"];
+        let total = product.precio * body.amount;
         let newSale = {
           _id: id,
           ...body,
-          total: total
+          total: total,
         };
-        
+
         let oldProductAmount = sale.amount + product.cantidad;
         console.log(`old cantidadd ${oldProductAmount}`);
 
         await SalesService.updateProduct(idProduct, newProduct);
- 
-        if (body.amount < oldProductAmount) {
+
+        if (body.amount <= oldProductAmount) {
           await SalesService.update(id, newSale);
           Response.success(res, 201, `Venta ${id} actualizada`, newSale);
         } else {
           Response.error(res, new createError.BadRequest());
         }
-
       }
     } catch (error) {
       debug(error),
         // respuesta de error, el error puede ser desconocido
         Response.error(res);
+    }
+  },
+  deleteSale: async (req, res) => {
+    try {
+
+      const {params: {id}} = req;
+
+      let productId = await SalesService.getById(id);
+
+      if (!productId) {
+        Response.error(res, new createError.NotFound());
+      } else {
+        let result = await SalesService.deleteSale(id);
+        Response.success(res, 202, "Venta eliminada", productId);
+      }
+    }
+    catch {
+      debug(error),
+      // respuesta de error, el error puede ser desconocido
+      Response.error(res);
     }
   },
   generateReport: async (req, res) => {

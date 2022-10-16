@@ -73,6 +73,13 @@ const update = async (id, body) => {
   return result.insertedId;
 };
 
+// delete
+const deleteSale = async (id) => {
+  const collection = await Database(COLLECTION);
+  let result = await collection.deleteOne({_id: ObjectId(id)})
+  return result
+};
+
 // generar reporte
 const generateReport = async (name, res) => {
   let sales = await getAll();
@@ -87,5 +94,6 @@ module.exports.SalesService = {
   getUser,
   create,
   update,
+  deleteSale,
   generateReport,
 };
