@@ -58,6 +58,7 @@ const create = async (product) => {
 // update
 const update = async (id, body) => {
   const collection = await Database(COLLECTION);
+
   let result = await collection.updateOne(
     { _id: ObjectId(id) },
     {

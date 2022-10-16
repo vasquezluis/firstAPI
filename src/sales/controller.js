@@ -104,34 +104,41 @@ module.exports.SalesController = {
       
         if (body.amount <= sale.amount) {
           newAmount = (sale.amount - body.amount) + product.cantidad; 
+          console.log(`new amount <= ${newAmount}`)
         }
         if (body.amount > sale.amount) {
           newAmount = body.amount - sale.amount; 
           newAmount = product.cantidad - newAmount;
-          console.log(`new amount ${newAmount}`)
+          console.log(`new amount > ${newAmount}`)
         }
 
         let idProduct = product._id.toString();
-        let total = product.precio * body.amount
         let newProduct = {
           name: product.name,
           precio: product.precio,
           cantidad: newAmount,
-          total: total,
         };
-      
+
+        delete sale['total']
+        let total = product.precio * body.amount
+        let newSale = {
+          _id: id,
+          ...body,
+          total: total
+        };
+        
+        let oldProductAmount = sale.amount + product.cantidad;
+        console.log(`old cantidadd ${oldProductAmount}`);
+
         await SalesService.updateProduct(idProduct, newProduct);
-
-        let product = await SalesService.getProduct(body.product);
-      
-        /* Parte faltante: no funciona si el body.amount es mayor al sale.amount */
-
-        if (updateProduct.body.amount < product.cantidad) {
-          await SalesService.update(product.id, updateProduct.body);
-          Response.success(res, 201, `Venta ${product.id} actualizada`, updateProduct.body);
+ 
+        if (body.amount < oldProductAmount) {
+          await SalesService.update(id, newSale);
+          Response.success(res, 201, `Venta ${id} actualizada`, newSale);
         } else {
           Response.error(res, new createError.BadRequest());
         }
+
       }
     } catch (error) {
       debug(error),
